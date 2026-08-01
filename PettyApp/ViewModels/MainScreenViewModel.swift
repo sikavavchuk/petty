@@ -9,22 +9,26 @@ import SwiftUI
 
 @Observable
 class MainScreenViewModel {
-    var totalFocuseTime: TimeInterval = 0
-    var totalFocusedHours: String = "*"
-    var totalFocusedMinutes: String = "*"
+    
+    var totalFocusTime = 0
+    var totalFocusedHours: String = "0h"
+    var totalFocusedMinutes: String = "0m"
     
     var isLoading = false
     
-    func updateTotalFocusedTime(with time: TimeInterval) {
-        totalFocuseTime += time
-        totalFocusedHours = String("\(Int(totalFocuseTime / 3600))h")
-        totalFocusedMinutes = String("\(Int(totalFocuseTime.truncatingRemainder(dividingBy: 3600) / 60))m")
+    func updateTotalFocusedTime() {
+        if totalFocusTime != 0 {
+            let hours = totalFocusTime / 3600
+            let minutes = (totalFocusTime - hours * 3600) / 60
+            totalFocusedHours = "\(hours)h"
+            totalFocusedMinutes = "\(minutes)m"
+        }
     }
     
     func startInitialUpdate() async {
         isLoading = true
         try? await Task.sleep(for: .seconds(1))
-        updateTotalFocusedTime(with: 10000)
+        updateTotalFocusedTime()
         isLoading = false
     }
 }

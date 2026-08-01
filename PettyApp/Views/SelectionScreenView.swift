@@ -28,10 +28,12 @@ struct SelectionScreenView: View {
                                 Text("\(hour) h")
                                     .tag(hour)
                         }
+                    
                     }
                     .pickerStyle(.wheel)
                     .frame(width: 100, height: 150)
                     .clipped()
+                    
                 
                 Picker("Minutes", selection: $selectedMinute) {
                     ForEach(1...59, id: \.self) { minute in
@@ -45,7 +47,7 @@ struct SelectionScreenView: View {
             }
             HStack(spacing: 50) {
                 Button() {
-                    
+                    //selection model
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(.largeTitle)
@@ -68,7 +70,7 @@ struct SelectionScreenView: View {
                     }
                 }
                 Button() {
-                    
+                    //selection model
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.largeTitle)
@@ -91,7 +93,12 @@ struct SelectionScreenView: View {
                 .padding(.horizontal, 20)
             
             Button() {
-                path.append(Route.session)
+                path.append(
+                    Route.session(
+                        hour: selectedHour,
+                        minutes: selectedMinute
+                    )
+                )
             } label: {
                 HStack(spacing: 15) {
 

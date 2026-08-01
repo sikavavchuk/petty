@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainScreenView: View {
     
-    @State private var model = MainScreenViewModel()
+    @Environment(MainScreenViewModel.self) private var model
     
     @Binding var path: NavigationPath
     
@@ -150,5 +150,6 @@ struct MainScreenView: View {
 #Preview {
     NavigationStack {
         MainScreenView(path: .constant(NavigationPath()))
+            .environment(MainScreenViewModel())
     }
 }
