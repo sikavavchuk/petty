@@ -9,10 +9,11 @@ import SwiftUI
 
 struct SelectionScreenView: View {
     
+    @State private var selectionModel = SelectionScreenViewModel()
+    
     @Binding var path: NavigationPath
     @State private var selectedHour = 1
     @State private var selectedMinute = 30
-    @State private var breakTime: Int = 5
 
     var body: some View {
         
@@ -47,7 +48,7 @@ struct SelectionScreenView: View {
             }
             HStack(spacing: 50) {
                 Button() {
-                    //selection model
+                    selectionModel.minusButtonClicked()
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(.largeTitle)
@@ -64,13 +65,13 @@ struct SelectionScreenView: View {
                         Text("Break time")
                     }
                     HStack {
-                        Text("\(breakTime)").font(.title2)
+                        Text("\(selectionModel.breakTime)").font(.title2)
                             .fontWeight(.bold)
                         Text("min")
                     }
                 }
                 Button() {
-                    //selection model
+                    selectionModel.plusButtonClicked()
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.largeTitle)
@@ -95,7 +96,8 @@ struct SelectionScreenView: View {
             Button() {
                 path.append(
                     Route.session(
-                        totalTimeSeconds: selectedHour * 3600 + selectedMinute * 1800
+                        totalTimeSeconds: selectedHour * 3600 + selectedMinute * 60, breakTime: selectionModel.breakTime
+                        
                     )
                 )
             } label: {
@@ -149,7 +151,8 @@ struct SelectionScreenView: View {
 
 #Preview {
     NavigationStack {
-        SelectionScreenView(path: .constant(NavigationPath()))
+        SelectionScreenView(
+            path: .constant(NavigationPath()))
     }
 }
 

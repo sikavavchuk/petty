@@ -10,10 +10,11 @@ import SwiftUI
 
 @Observable
 class SessionScreenViewModel {
-    //refactor : make public properties only for those who will be exposed to extarnal views
+    //OK refactor : make public properties only for those who will be exposed to extarnal views
     // OK move flags to method - not in a view
-    //fix timer and calculations, check run mode
+    //OK fix timer and calculations, check run mode
     //use app storage for total focus time in main screen model
+    
     //dark and light appearences
     
     var secondsRemaining = 0
@@ -26,7 +27,6 @@ class SessionScreenViewModel {
     var totalTimerSeconds: Int = 0
     
     var timeString: String {
-        print("SessionSV: \(secondsRemaining)") //debug
         let hours = secondsRemaining / 3600
         let minutes = (secondsRemaining % 3600) / 60
         let seconds = secondsRemaining % 60
@@ -52,15 +52,24 @@ class SessionScreenViewModel {
     
     func startTimer() {
         secondsRemaining = totalTimerSeconds
+
+        print("SessionSV: \(secondsRemaining)")
+
         isTimerRunning()
+
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
 
             if self.secondsRemaining > 0 {
-                self.secondsRemaining -= 10 //speeding up for testing
-                self.progress += 1 / Double(self.secondsRemaining)
+                self.secondsRemaining -= 10 // speeding up for testing
+                self.progress =
+                    1 - (Double(self.secondsRemaining) / Double(self.totalTimerSeconds))
             } else {
+                self.secondsRemaining = 0
+                self.progress = 1
+
                 self.timer?.invalidate()
                 self.timer = nil
+
                 self.isTimerRunning()
                 self.isTimerFinished()
             }

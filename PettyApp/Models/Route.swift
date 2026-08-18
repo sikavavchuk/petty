@@ -9,5 +9,8 @@ import Foundation
 
 enum Route: Hashable {
     case selection
-    case session(totalTimeSeconds: Int)
+    case session(
+        totalTimeSeconds: Int,
+        breakTime: Int
+    )
 }

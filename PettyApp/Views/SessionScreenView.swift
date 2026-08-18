@@ -10,13 +10,14 @@ import SwiftUI
 struct SessionScreenView: View {
     
     @Environment(MainScreenViewModel.self) private var mainModel
-    
+    @State private var sessionModel = SessionScreenViewModel()
     @Binding var path: NavigationPath
     @State private var showExitAlert = false
     
     let totalTimerSeconds: Int
-    
-    @State private var model = SessionScreenViewModel()
+    let breakTime: Int
+    private let second = 10
+
    
     var body: some View {
         VStack(spacing: 30) {
@@ -47,11 +48,11 @@ struct SessionScreenView: View {
             
             Spacer()
             
-            Text(model.timeString)
+            Text(sessionModel.timeString)
                 .font(.custom("Arial", size: 70)).fontWeight(.bold)
             
             HStack {
-                ProgressView(value: model.progress).tint(Color.orange)
+                ProgressView(value: sessionModel.progress).tint(Color.orange)
                     .frame(maxWidth: .infinity)
         
             }.padding()
@@ -96,7 +97,7 @@ struct SessionScreenView: View {
                         }
 
                     } message: {
-                        Text("Your progress won't be saved.")
+                        Text("Are you sure about that?")
                     }
                 
             }.padding()
@@ -112,22 +113,22 @@ struct SessionScreenView: View {
             }
         .navigationBarBackButtonHidden(true)
         .onAppear {
-            model.totalTimerSeconds = totalTimerSeconds
+            sessionModel.totalTimerSeconds = totalTimerSeconds
 
-            model.startTimer()
+            sessionModel.startTimer()
         }
-        .onChange(of: model.isFinished) { _, finished in
+        .onChange(of: sessionModel.isFinished) { _, finished in
             if finished {
                 mainModel.updateTotalFocusedTime()
                 
-                model.isTimerFinished()
-                model.isTimerRunning()
+                sessionModel.isTimerFinished()
+                sessionModel.isTimerRunning()
                 
                 path = NavigationPath()
             }
         }
-        .onChange(of: model.secondsRemaining) { _, secondsRemaining in
-                mainModel.updateTotalFocusedTime(time: model.totalTimerSeconds - secondsRemaining)
+        .onChange(of: sessionModel.secondsRemaining) { _, secondsRemaining in
+                mainModel.updateTotalFocusedTime(time: second)
             
         }
     }
@@ -137,8 +138,9 @@ struct SessionScreenView: View {
     NavigationStack {
         SessionScreenView(
             path: .constant(NavigationPath()),
-            totalTimerSeconds: 3600 + 1800
+            totalTimerSeconds: 3600 + 1800,
+            breakTime: 5
         )
-        .environment(MainScreenViewModel())
     }
+    .environment(MainScreenViewModel())
 }
