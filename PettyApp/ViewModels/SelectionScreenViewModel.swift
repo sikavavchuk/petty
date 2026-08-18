@@ -9,6 +9,7 @@ import SwiftUI
 
 @Observable
 class SelectionScreenViewModel {
+    
     var breakTime = 5
     
     func minusButtonClicked() {

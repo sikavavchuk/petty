@@ -19,14 +19,14 @@ struct PettyAppApp: App {
                         case .selection:
                             SelectionScreenView(
                                 path: $path
-                            )
+                            ).environment(mainModel)
                             
                         case .session(let totalTimeSeconds, let breakTime):
                             SessionScreenView(
                                 path: $path,
                                 totalTimerSeconds: totalTimeSeconds,
                                 breakTime: breakTime
-                            )
+                            ).environment(mainModel)
                         }
                         
                     }

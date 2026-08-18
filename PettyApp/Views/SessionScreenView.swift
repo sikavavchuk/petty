@@ -28,7 +28,7 @@ struct SessionScreenView: View {
                 Image("flame").resizable().frame(width: 45, height: 45)
                 VStack {
                     Text("Focus Session").font(.title3).fontWeight(.bold)
-                    Text("Break: 5 min")
+                    Text("Break time: \(breakTime) min")
                 }
             }.padding()
                 .frame(maxWidth: .infinity)
@@ -68,7 +68,7 @@ struct SessionScreenView: View {
             
             HStack(spacing: 100) {
                 Button() {
-                    
+                //pause method
                 } label: {
                     Image(systemName: "pause.fill")
                         .font(.title)
@@ -114,7 +114,7 @@ struct SessionScreenView: View {
         .navigationBarBackButtonHidden(true)
         .onAppear {
             sessionModel.totalTimerSeconds = totalTimerSeconds
-
+            
             sessionModel.startTimer()
         }
         .onChange(of: sessionModel.isFinished) { _, finished in
@@ -140,7 +140,6 @@ struct SessionScreenView: View {
             path: .constant(NavigationPath()),
             totalTimerSeconds: 3600 + 1800,
             breakTime: 5
-        )
+        ).environment(MainScreenViewModel())
     }
-    .environment(MainScreenViewModel())
 }

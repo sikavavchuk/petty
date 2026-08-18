@@ -10,12 +10,10 @@ import SwiftUI
 
 @Observable
 class SessionScreenViewModel {
-    //OK refactor : make public properties only for those who will be exposed to extarnal views
-    // OK move flags to method - not in a view
-    //OK fix timer and calculations, check run mode
-    //use app storage for total focus time in main screen model
     
-    //dark and light appearences
+    //seperate timers for focus and pause
+    //same with flags
+    //make main timer stop
     
     var secondsRemaining = 0
     var progress: Double = 0
