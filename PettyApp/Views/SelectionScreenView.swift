@@ -12,7 +12,7 @@ struct SelectionScreenView: View {
     @Binding var path: NavigationPath
     @State private var selectedHour = 1
     @State private var selectedMinute = 30
-    @State private var minute: Int = 5
+    @State private var breakTime: Int = 5
 
     var body: some View {
         
@@ -64,7 +64,7 @@ struct SelectionScreenView: View {
                         Text("Break time")
                     }
                     HStack {
-                        Text("\(minute)").font(.title2)
+                        Text("\(breakTime)").font(.title2)
                             .fontWeight(.bold)
                         Text("min")
                     }
@@ -95,8 +95,7 @@ struct SelectionScreenView: View {
             Button() {
                 path.append(
                     Route.session(
-                        hour: selectedHour,
-                        minutes: selectedMinute
+                        totalTimeSeconds: selectedHour * 3600 + selectedMinute * 1800
                     )
                 )
             } label: {

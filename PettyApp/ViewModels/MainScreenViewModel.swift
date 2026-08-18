@@ -10,13 +10,18 @@ import SwiftUI
 @Observable
 class MainScreenViewModel {
     
-    var totalFocusTime = 0
+    private var totalFocusTime = 0
     var totalFocusedHours: String = "0h"
     var totalFocusedMinutes: String = "0m"
     
     var isLoading = false
     
-    func updateTotalFocusedTime() {
+    func updateTotalFocusedTime(time: Int = 0) {
+        //logic isolation
+        if time > 0 {
+            totalFocusTime += time
+        }
+        
         if totalFocusTime != 0 {
             let hours = totalFocusTime / 3600
             let minutes = (totalFocusTime - hours * 3600) / 60

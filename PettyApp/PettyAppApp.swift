@@ -19,11 +19,10 @@ struct PettyAppApp: App {
                         case .selection:
                             SelectionScreenView(path: $path)
                             
-                        case .session(let hour, let minutes):
+                        case .session(let totalTimeSeconds):
                             SessionScreenView(
                                 path: $path,
-                                hour: hour,
-                                minutes: minutes
+                                totalTimerSeconds: totalTimeSeconds
                             )
                         }
                     }

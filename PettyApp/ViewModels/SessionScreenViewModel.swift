@@ -10,20 +10,23 @@ import SwiftUI
 
 @Observable
 class SessionScreenViewModel {
+    //refactor : make public properties only for those who will be exposed to extarnal views
+    // OK move flags to method - not in a view
+    //fix timer and calculations, check run mode
+    //use app storage for total focus time in main screen model
+    //dark and light appearences
     
     var secondsRemaining = 0
     var progress: Double = 0
-    var progressStep: Double = 0
-    var timer: Timer?
-    var isRunning = false
+    private var timer: Timer?
     
+    var isRunning = false
     var isFinished = false
     
-    var hour = 1
-    var minutes = 30
-    var seconds = 60
+    var totalTimerSeconds: Int = 0
     
     var timeString: String {
+        print("SessionSV: \(secondsRemaining)") //debug
         let hours = secondsRemaining / 3600
         let minutes = (secondsRemaining % 3600) / 60
         let seconds = secondsRemaining % 60
@@ -31,23 +34,35 @@ class SessionScreenViewModel {
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
     
+    func isTimerRunning() {
+        if isRunning {
+            isRunning = false
+        } else {
+            isRunning = true
+        }
+    }
+    
+    func isTimerFinished() {
+        if isFinished {
+            isFinished = false
+        } else {
+            isFinished = true
+        }
+    }
+    
     func startTimer() {
-        
-        secondsRemaining = hour * 3600 + minutes * 60
-        
-        progressStep = 1 / Double(secondsRemaining)
-
-        isRunning = true
-
+        secondsRemaining = totalTimerSeconds
+        isTimerRunning()
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
 
             if self.secondsRemaining > 0 {
-                self.secondsRemaining -= 1
-                self.progress += self.progressStep
+                self.secondsRemaining -= 10 //speeding up for testing
+                self.progress += 1 / Double(self.secondsRemaining)
             } else {
                 self.timer?.invalidate()
-                self.isRunning = false
-                self.isFinished = true 
+                self.timer = nil
+                self.isTimerRunning()
+                self.isTimerFinished()
             }
         }
     }

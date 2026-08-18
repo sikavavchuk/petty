@@ -14,8 +14,7 @@ struct SessionScreenView: View {
     @Binding var path: NavigationPath
     @State private var showExitAlert = false
     
-    let hour: Int
-    let minutes: Int
+    let totalTimerSeconds: Int
     
     @State private var model = SessionScreenViewModel()
    
@@ -54,8 +53,7 @@ struct SessionScreenView: View {
             HStack {
                 ProgressView(value: model.progress).tint(Color.orange)
                     .frame(maxWidth: .infinity)
-                        
-                //Text("\(Int(model.progress * 100))%")
+        
             }.padding()
                 .frame(maxWidth: .infinity)
                 .background(
@@ -114,25 +112,23 @@ struct SessionScreenView: View {
             }
         .navigationBarBackButtonHidden(true)
         .onAppear {
-            model.hour = hour
-            model.minutes = minutes
+            model.totalTimerSeconds = totalTimerSeconds
 
             model.startTimer()
         }
         .onChange(of: model.isFinished) { _, finished in
             if finished {
-                let duration = hour * 3600 + minutes * 60
-                
-                mainModel.totalFocusTime += duration
-                
                 mainModel.updateTotalFocusedTime()
                 
-                model.isFinished = false
-                
-                model.isRunning = false
+                model.isTimerFinished()
+                model.isTimerRunning()
                 
                 path = NavigationPath()
             }
+        }
+        .onChange(of: model.secondsRemaining) { _, secondsRemaining in
+                mainModel.updateTotalFocusedTime(time: model.totalTimerSeconds - secondsRemaining)
+            
         }
     }
 }
@@ -141,8 +137,7 @@ struct SessionScreenView: View {
     NavigationStack {
         SessionScreenView(
             path: .constant(NavigationPath()),
-            hour: 1,
-            minutes: 30
+            totalTimerSeconds: 3600 + 1800
         )
         .environment(MainScreenViewModel())
     }
