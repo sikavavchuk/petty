@@ -24,7 +24,7 @@ struct PettyAppApp: App {
                         case .session(let totalTimeSeconds, let breakTime):
                             SessionScreenView(
                                 path: $path,
-                                totalTimerSeconds: totalTimeSeconds,
+                                totalFocusTimerSeconds: totalTimeSeconds,
                                 breakTime: breakTime
                             ).environment(mainModel)
                         }

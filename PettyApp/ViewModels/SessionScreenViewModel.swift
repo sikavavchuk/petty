@@ -1,77 +1,105 @@
-//
-//  SessionScreenViewModel.swift
-//  PettyApp
-//
-//  Created by Viktoriia Savchuk  on 31/07/2026.
-//
-
-
 import SwiftUI
 
 @Observable
 class SessionScreenViewModel {
     
-    //seperate timers for focus and pause
-    //same with flags
-    //make main timer stop
+    // MARK: - Focus
     
-    var secondsRemaining = 0
-    var progress: Double = 0
-    private var timer: Timer?
+    var focusSecondsRemaining = 0
+    var focusProgress: Double = 0
+    private var focusTimer: Timer?
     
-    var isRunning = false
-    var isFinished = false
+    var focusTimerRunning = false
+    var focusTimerFinished = false
     
-    var totalTimerSeconds: Int = 0
+    var totalFocusTimerSeconds: Int = 0
     
-    var timeString: String {
-        let hours = secondsRemaining / 3600
-        let minutes = (secondsRemaining % 3600) / 60
-        let seconds = secondsRemaining % 60
-
+    var focusTimeString: String {
+        let hours = focusSecondsRemaining / 3600
+        let minutes = (focusSecondsRemaining % 3600) / 60
+        let seconds = focusSecondsRemaining % 60
+        
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
     
-    func isTimerRunning() {
-        if isRunning {
-            isRunning = false
-        } else {
-            isRunning = true
-        }
+    
+    // MARK: - Break
+    
+    var pauseSecondsRemaining = 0
+    private var pauseTimer: Timer?
+    var pauseTimerRunning = false
+    
+    var pauseTimeString: String {
+        let minutes = pauseSecondsRemaining / 60
+        let seconds = pauseSecondsRemaining % 60
+        
+        return String(format: "%02d:%02d", minutes, seconds)
     }
     
-    func isTimerFinished() {
-        if isFinished {
-            isFinished = false
-        } else {
-            isFinished = true
-        }
-    }
     
-    func startTimer() {
-        secondsRemaining = totalTimerSeconds
-
-        print("SessionSV: \(secondsRemaining)")
-
-        isTimerRunning()
-
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-
-            if self.secondsRemaining > 0 {
-                self.secondsRemaining -= 10 // speeding up for testing
-                self.progress =
-                    1 - (Double(self.secondsRemaining) / Double(self.totalTimerSeconds))
+    // MARK: - Focus Timer
+    
+    func startFocusTimer() {
+        
+        focusSecondsRemaining = totalFocusTimerSeconds
+        focusTimerRunning = true
+        focusTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            
+            guard let self else { return }
+            guard !self.pauseTimerRunning else {
+                return
+            }
+            if self.focusSecondsRemaining > 0 {
+                self.focusSecondsRemaining -= 10
+                self.focusProgress =
+                    1 - (Double(self.focusSecondsRemaining) /
+                         Double(self.totalFocusTimerSeconds))
             } else {
-                self.secondsRemaining = 0
-                self.progress = 1
-
-                self.timer?.invalidate()
-                self.timer = nil
-
-                self.isTimerRunning()
-                self.isTimerFinished()
+                self.finishFocusTimer()
             }
         }
     }
-
+    
+    
+    func finishFocusTimer() {
+        focusSecondsRemaining = 0
+        focusProgress = 1
+        focusTimer?.invalidate()
+        focusTimer = nil
+        
+        focusTimerRunning = false
+        focusTimerFinished = true
+    }
+    
+    
+    // MARK: - Break Timer
+    
+    func startPauseTimer() {
+        guard !pauseTimerRunning else { return }
+        pauseTimerRunning = true
+        pauseTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            
+            guard let self else { return }
+            if self.pauseSecondsRemaining > 0 {
+                self.pauseSecondsRemaining -= 10
+                print(pauseSecondsRemaining)
+            } else {
+                self.finishPauseTimer()
+            }
+        }
+    }
+    
+    
+    func finishPauseTimer() {
+        pauseTimer?.invalidate()
+        pauseTimer = nil
+        pauseTimerRunning = false
+    }
+    
+    
+    // MARK: - Stop Break Early
+    
+    func stopPauseTimer() {
+        finishPauseTimer()
+    }
 }

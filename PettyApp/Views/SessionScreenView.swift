@@ -14,11 +14,10 @@ struct SessionScreenView: View {
     @Binding var path: NavigationPath
     @State private var showExitAlert = false
     
-    let totalTimerSeconds: Int
+    let totalFocusTimerSeconds: Int
     let breakTime: Int
     private let second = 10
 
-   
     var body: some View {
         VStack(spacing: 30) {
             
@@ -48,34 +47,67 @@ struct SessionScreenView: View {
             
             Spacer()
             
-            Text(sessionModel.timeString)
-                .font(.custom("Arial", size: 70)).fontWeight(.bold)
-            
-            HStack {
-                ProgressView(value: sessionModel.progress).tint(Color.orange)
-                    .frame(maxWidth: .infinity)
-        
-            }.padding()
+            //UI if timer is active
+            if sessionModel.pauseTimerRunning {
+                
+                VStack(spacing: 20) {
+                    Text("Break Time")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    
+                    Text(sessionModel.pauseTimeString)
+                        .font(.custom("Arial", size: 70))
+                        .fontWeight(.bold)
+                    
+                    Text("Take a little rest 🐱")
+                        .font(.title3)
+                }
+                
+            } else {
+                Text(sessionModel.focusTimeString)
+                    .font(.custom("Arial", size: 70))
+                    .fontWeight(.bold)
+                
+                HStack {
+                    ProgressView(value: sessionModel.focusProgress)
+                        .tint(.orange)
+                        .frame(maxWidth: .infinity)
+                }
+                .padding()
                 .frame(maxWidth: .infinity)
                 .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(
-                    red: 255 / 255,
-                    green: 249 / 255,
-                    blue: 230 / 255))
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(
+                            Color(
+                                red: 255 / 255,
+                                green: 249 / 255,
+                                blue: 230 / 255
+                            )
+                        )
                 )
                 .padding(.horizontal, 20)
-            
+            }
             HStack(spacing: 100) {
-                Button() {
-                //pause method
+                Button {
+                    if sessionModel.pauseTimerRunning {
+                        // End the current break
+                        sessionModel.stopPauseTimer()
+                    } else {
+                        // Start a new break
+                        sessionModel.startPauseTimer()
+                    }
+                    
                 } label: {
-                    Image(systemName: "pause.fill")
-                        .font(.title)
-                        .foregroundStyle(.black)
-                        .frame(width: 72, height: 72)
-                        .background(Color.yellow)
-                        .clipShape(Circle())
+                    Image(
+                        systemName: sessionModel.pauseTimerRunning
+                            ? "play.fill"
+                            : "pause.fill"
+                    )
+                    .font(.title)
+                    .foregroundStyle(.black)
+                    .frame(width: 72, height: 72)
+                    .background(Color.yellow)
+                    .clipShape(Circle())
                 }
                 
                 Button() {
@@ -113,24 +145,22 @@ struct SessionScreenView: View {
             }
         .navigationBarBackButtonHidden(true)
         .onAppear {
-            sessionModel.totalTimerSeconds = totalTimerSeconds
-            
-            sessionModel.startTimer()
+            sessionModel.totalFocusTimerSeconds = totalFocusTimerSeconds
+            sessionModel.pauseSecondsRemaining = breakTime * 60 //in seconds
+            print(breakTime)
+            sessionModel.startFocusTimer()
         }
-        .onChange(of: sessionModel.isFinished) { _, finished in
+        .onChange(of: sessionModel.focusTimerFinished) { _, finished in
             if finished {
                 mainModel.updateTotalFocusedTime()
-                
-                sessionModel.isTimerFinished()
-                sessionModel.isTimerRunning()
-                
                 path = NavigationPath()
             }
         }
-        .onChange(of: sessionModel.secondsRemaining) { _, secondsRemaining in
+        .onChange(of: sessionModel.focusSecondsRemaining) { _, secondsRemaining in
                 mainModel.updateTotalFocusedTime(time: second)
             
         }
+        
     }
 }
 
@@ -138,7 +168,7 @@ struct SessionScreenView: View {
     NavigationStack {
         SessionScreenView(
             path: .constant(NavigationPath()),
-            totalTimerSeconds: 3600 + 1800,
+            totalFocusTimerSeconds: 3600 + 1800,
             breakTime: 5
         ).environment(MainScreenViewModel())
     }
