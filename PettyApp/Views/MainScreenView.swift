@@ -34,13 +34,17 @@ struct MainScreenView: View {
             HStack(spacing: 20) {
                 
                 VStack {
-                    Text("Curren Streak")
+                    Text("Current Streak")
                     HStack {
                         Image("flame")
                             .resizable()
                             .frame(width: 50, height: 50)
-                        Text("6").font(.title)
-                            .fontWeight(.bold)
+                        if model.isLoading {
+                            ProgressView()
+                        } else {
+                            Text("\(model.streak)").font(.title)
+                                .fontWeight(.bold)
+                        }
                         Text("Days")
                     }
                     Text("Keep it up!")

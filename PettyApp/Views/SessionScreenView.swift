@@ -52,30 +52,13 @@ struct SessionScreenView: View {
             Spacer()
             
             //UI if timer is active
-            if sessionModel.pauseTimerRunning {
-                
-                VStack(spacing: 20) {
-                    Text("Break Time")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .frame(height: 30)
-                    
-                    Text(sessionModel.pauseTimeString)
-                        .font(.custom("Arial", size: 70))
-                        .fontWeight(.bold)
-                    
-                    Text("Take a little rest.")
-                        .font(.title3)
-                        .frame(height: 1)
-                }
-                .transition(.opacity)
-                
-            } else {
+            ZStack {
+                //Focus UI
                 VStack {
                     Text(sessionModel.focusTimeString)
                         .font(.custom("Arial", size: 70))
                         .fontWeight(.bold)
-                    
+
                     HStack {
                         GeometryReader { geometry in
                             ZStack(alignment: .leading) {
@@ -85,35 +68,51 @@ struct SessionScreenView: View {
                                 Capsule()
                                     .fill(.orange)
                                     .frame(
-                                        width: geometry.size.width * sessionModel.focusProgress
+                                        width: geometry.size.width *
+                                            sessionModel.focusProgress
                                     )
                             }
                         }
                         .frame(height: 16)
                     }
-                    .transition(.opacity)
                     .padding()
                     .frame(maxWidth: .infinity)
                     .background(
                         RoundedRectangle(cornerRadius: 20)
                             .fill(
                                 sessionModel.focusTimerRunning
-                                    ? Color(
-                                        red: 255 / 255,
-                                        green: 249 / 255,
-                                        blue: 230 / 255
-                                    )
-                                    : Color(
-                                        red: 255 / 255,
-                                        green: 110 / 255,
-                                        blue: 130 / 255
-                                    )
+                                ? Color(
+                                    red: 255 / 255,
+                                    green: 249 / 255,
+                                    blue: 230 / 255
+                                )
+                                : Color(
+                                    red: 255 / 255,
+                                    green: 110 / 255,
+                                    blue: 130 / 255
+                                )
                             )
                     )
                     .padding(.horizontal, 20)
                 }
-                .transition(.opacity)
+                .opacity(sessionModel.pauseTimerRunning ? 0 : 1)
+
+                //Break UI
+                VStack(spacing: 20) {
+                    Text("Break Time")
+                        .font(.title)
+                        .fontWeight(.bold)
+
+                    Text(sessionModel.pauseTimeString)
+                        .font(.custom("Arial", size: 70))
+                        .fontWeight(.bold)
+
+                    Text("Take a little rest.")
+                        .font(.title3)
+                }
+                .opacity(sessionModel.pauseTimerRunning ? 1 : 0)
             }
+            .frame(height: 150)
             HStack(spacing: 100) {
                 Button {
                     if sessionModel.pauseTimerRunning {
