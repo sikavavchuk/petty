@@ -9,6 +9,7 @@ import SwiftUI
 
 @Observable
 class MainScreenViewModel {
+    
     private var totalFocusTime = 0
     private let defaults = UserDefaults.standard
     

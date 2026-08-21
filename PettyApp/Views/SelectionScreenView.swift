@@ -49,7 +49,6 @@ struct SelectionScreenView: View {
             HStack(spacing: 50) {
                 Button() {
                     selectionModel.minusButtonClicked()
-                    print(selectionModel.breakTime)
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(.largeTitle)
@@ -73,7 +72,6 @@ struct SelectionScreenView: View {
                 }
                 Button() {
                     selectionModel.plusButtonClicked()
-                    print(selectionModel.breakTime)
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.largeTitle)
