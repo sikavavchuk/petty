@@ -24,7 +24,7 @@ struct SessionScreenView: View {
             Spacer()
             
             HStack {
-                Image("flame").resizable().frame(width: 45, height: 45)
+                Image(sessionModel.pauseTimerRunning ? "pause-flame" : "flame").resizable().frame(width: 45, height: 45)
                 VStack {
                     Text("Focus Session").font(.title3).fontWeight(.bold)
                     Text("Break time: \(breakTime) min")
@@ -33,15 +33,19 @@ struct SessionScreenView: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(
-                            red: 255 / 255,
-                            green: 249 / 255,
-                            blue: 230 / 255
-                        ))
+                        .foregroundStyle(
+                            sessionModel.pauseTimerRunning
+                                ? Color(red: 185 / 255, green: 209 / 255, blue: 117 / 255)
+                                : Color(
+                                    red: 255 / 255,
+                                    green: 249 / 255,
+                                    blue: 230 / 255
+                                )
+                        )
                 )
                 .padding(.horizontal, 80)
             
-            Image("selection-cat")
+            Image(sessionModel.pauseTimerRunning ? "pause-cat" : "selection-cat")
                 .resizable()
                 .frame(width: 300, height: 200)
             
@@ -54,38 +58,61 @@ struct SessionScreenView: View {
                     Text("Break Time")
                         .font(.title)
                         .fontWeight(.bold)
+                        .frame(height: 30)
                     
                     Text(sessionModel.pauseTimeString)
                         .font(.custom("Arial", size: 70))
                         .fontWeight(.bold)
                     
-                    Text("Take a little rest 🐱")
+                    Text("Take a little rest.")
                         .font(.title3)
+                        .frame(height: 1)
                 }
+                .transition(.opacity)
                 
             } else {
-                Text(sessionModel.focusTimeString)
-                    .font(.custom("Arial", size: 70))
-                    .fontWeight(.bold)
-                
-                HStack {
-                    ProgressView(value: sessionModel.focusProgress)
-                        .tint(.orange)
-                        .frame(maxWidth: .infinity)
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(
-                            Color(
-                                red: 255 / 255,
-                                green: 249 / 255,
-                                blue: 230 / 255
+                VStack {
+                    Text(sessionModel.focusTimeString)
+                        .font(.custom("Arial", size: 70))
+                        .fontWeight(.bold)
+                    
+                    HStack {
+                        GeometryReader { geometry in
+                            ZStack(alignment: .leading) {
+                                Capsule()
+                                    .fill(Color.white.opacity(0.8))
+
+                                Capsule()
+                                    .fill(.orange)
+                                    .frame(
+                                        width: geometry.size.width * sessionModel.focusProgress
+                                    )
+                            }
+                        }
+                        .frame(height: 16)
+                    }
+                    .transition(.opacity)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(
+                                sessionModel.focusTimerRunning
+                                    ? Color(
+                                        red: 255 / 255,
+                                        green: 249 / 255,
+                                        blue: 230 / 255
+                                    )
+                                    : Color(
+                                        red: 255 / 255,
+                                        green: 110 / 255,
+                                        blue: 130 / 255
+                                    )
                             )
-                        )
-                )
-                .padding(.horizontal, 20)
+                    )
+                    .padding(.horizontal, 20)
+                }
+                .transition(.opacity)
             }
             HStack(spacing: 100) {
                 Button {
@@ -106,7 +133,11 @@ struct SessionScreenView: View {
                     .font(.title)
                     .foregroundStyle(.black)
                     .frame(width: 72, height: 72)
-                    .background(Color.yellow)
+                    .background(
+                        sessionModel.pauseTimerRunning
+                            ? Color(red: 185 / 255, green: 209 / 255, blue: 117 / 255)
+                            : Color.yellow
+                    )
                     .clipShape(Circle())
                 }
                 
@@ -117,7 +148,11 @@ struct SessionScreenView: View {
                         .font(.title)
                         .foregroundStyle(.white)
                         .frame(width: 72, height: 72)
-                        .background(Color.red)
+                        .background(
+                            sessionModel.pauseTimerRunning
+                            ? Color.gray
+                                : Color.red
+                        )
                         .clipShape(Circle())
                 }.padding(.horizontal, 20)
                     .alert("Leave session?", isPresented: $showExitAlert) {
@@ -140,7 +175,11 @@ struct SessionScreenView: View {
         .frame(maxWidth: .infinity)
             .background {
                 Rectangle()
-                    .foregroundStyle(Color(red: 255 / 255, green: 240 / 255, blue: 218 / 255))
+                    .foregroundStyle(
+                        sessionModel.pauseTimerRunning
+                        ? Color(red: 245 / 255, green: 251 / 255, blue: 218 / 255)
+                            : Color(red: 1, green: 240 / 255, blue: 218 / 255)
+                    )
                     .ignoresSafeArea()
             }
         .navigationBarBackButtonHidden(true)

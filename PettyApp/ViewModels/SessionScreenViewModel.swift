@@ -40,20 +40,28 @@ class SessionScreenViewModel {
     // MARK: - Focus Timer
     
     func startFocusTimer() {
-        
         focusSecondsRemaining = totalFocusTimerSeconds
+        focusProgress = 0
         focusTimerRunning = true
-        focusTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            
+
+        focusTimer = Timer.scheduledTimer(
+            withTimeInterval: 1,
+            repeats: true
+        ) { [weak self] _ in
             guard let self else { return }
             guard !self.pauseTimerRunning else {
                 return
             }
             if self.focusSecondsRemaining > 0 {
-                self.focusSecondsRemaining -= 10
-                self.focusProgress =
-                    1 - (Double(self.focusSecondsRemaining) /
-                         Double(self.totalFocusTimerSeconds))
+                self.focusSecondsRemaining -= 1
+                let newProgress =
+                    1 - (
+                        Double(self.focusSecondsRemaining) /
+                        Double(self.totalFocusTimerSeconds)
+                    )
+                withAnimation(.linear(duration: 1)) {
+                    self.focusProgress = newProgress
+                }
             } else {
                 self.finishFocusTimer()
             }
@@ -76,13 +84,14 @@ class SessionScreenViewModel {
     
     func startPauseTimer() {
         guard !pauseTimerRunning else { return }
-        pauseTimerRunning = true
+        withAnimation {
+            pauseTimerRunning = true
+        }
         pauseTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             
             guard let self else { return }
             if self.pauseSecondsRemaining > 0 {
                 self.pauseSecondsRemaining -= 10
-                print(pauseSecondsRemaining)
             } else {
                 self.finishPauseTimer()
             }
@@ -93,7 +102,9 @@ class SessionScreenViewModel {
     func finishPauseTimer() {
         pauseTimer?.invalidate()
         pauseTimer = nil
-        pauseTimerRunning = false
+        withAnimation {
+            pauseTimerRunning = false
+        }
     }
     
     
